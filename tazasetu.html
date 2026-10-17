@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TaazaSetu – Prototype</title>
+<style>
+:root{--bg:#fffdf6;--card:#ffffff;--bd:#ecdcae;--tx:#2b2108;--mu:#85722f;--ac:#b8860b;--rd:#c0392b;--am:#b7791f;--gr:#2e7d4f;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.app{max-width:760px;margin:0 auto;padding:12px 14px 90px}
+header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+h1{font-size:19px;margin:0}h1 span{color:var(--ac)}
+.date{font-size:12px;color:var(--mu)}
+button{font:inherit;cursor:pointer;border:1px solid var(--bd);background:var(--card);color:var(--tx);padding:8px 12px;border-radius:10px}
+button.p{background:linear-gradient(135deg,#d4a017,#b8860b);border-color:#b8860b;color:#fff;font-weight:600}
+button.d{background:var(--rd);border-color:var(--rd);color:#fff}
+.card{background:var(--card);border:1px solid var(--bd);box-shadow:0 1px 6px #b8860b14;border-radius:14px;padding:12px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.k{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.04em}.v{font-size:22px;font-weight:700}
+h3{margin:0 0 8px;font-size:14px;color:var(--ac);text-transform:uppercase;letter-spacing:.04em}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;max-width:190px;border:0;border-radius:0;background:none;color:var(--mu);padding:12px 4px;font-size:13px}
+nav button.on{color:var(--ac);font-weight:700}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--bd)}
+.row:first-of-type{border-top:0}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;white-space:nowrap}
+.fresh{background:#2e7d4f1f;color:var(--gr)}.soon{background:#d4a0172b;color:var(--am)}.exp{background:#c0392b1f;color:var(--rd)}
+.mu{color:var(--mu);font-size:13px}
+.view{position:relative;height:150px;border-radius:12px;background:#fff8e1;border:2px dashed var(--ac);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--ac);margin-bottom:10px}
+.view.on::after{content:"";position:absolute;left:0;right:0;height:3px;background:var(--rd);box-shadow:0 0 12px var(--rd);animation:sc 1s ease-in-out infinite alternate}
+@keyframes sc{from{top:8%}to{top:90%}}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+input{font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:8px;width:100%}
+label{display:block;font-size:12px;color:var(--mu);margin:8px 0 3px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:110px}
+.bars div{flex:1;background:var(--ac);border-radius:5px 5px 0 0;position:relative;min-height:4px}
+.bars b{position:absolute;top:-16px;left:0;right:0;text-align:center;font-size:11px;font-weight:400}
+.bl{display:flex;gap:6px;font-size:11px;color:var(--mu);text-align:center;margin-top:3px}.bl span{flex:1}
+.toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);background:var(--ac);color:#fff;padding:9px 16px;border-radius:99px;font-weight:600;font-size:13px;z-index:9;max-width:90%}
+.wrap{overflow-x:auto}
+</style></head><body><div class="app">
+<header><div><h1>Taaza<span>Setu</span></h1><div class="date" id="dt"></div></div>
+<div style="display:flex;gap:6px"><button class="p" id="adv">⏭ Next day</button></div></header>
+<main id="m"></main></div>
+<nav id="nv"></nav><div id="ts"></div>
+<script>
+const B0=Date.UTC(2026,9,17),DAY=864e5;let D=0,tab='home',sel='p1';
+const P=[{id:'p1',n:'Fresh Milk 1L',c:'Dairy',pr:62,co:48,dm:14,bc:'8901262150019',lb:'EXP 19 OCT 26'},
+{id:'p2',n:'Croissant (pack of 4)',c:'Bakery',pr:120,co:70,dm:9,bc:'8906001230045',lb:'BB 18/10/26'},
+{id:'p3',n:'Paneer 200g',c:'Dairy',pr:95,co:72,dm:7,bc:'8901058881236',lb:'USE BY 24 OCT 26'},
+{id:'p4',n:'Whole Wheat Bread',c:'Bakery',pr:50,co:34,dm:12,bc:'8902080012233',lb:'EXP 21 OCT 26'},
+{id:'p5',n:'Cold Coffee Mix',c:'Beverage',pr:210,co:150,dm:4,bc:'8904004400011',lb:'BB 12 JAN 27'}];
+let BT=[{id:1,p:'p1',q:30,e:1},{id:2,p:'p1',q:24,e:6},{id:3,p:'p2',q:16,e:0},{id:4,p:'p2',q:20,e:2},{id:5,p:'p3',q:12,e:3},{id:6,p:'p4',q:20,e:4},{id:7,p:'p4',q:14,e:1},{id:8,p:'p5',q:25,e:80}];
+let S={waste:0,rec:0,saved:0,sold:0},nid=9,wasteLog=[];
+const $=s=>document.querySelector(s),pp=id=>P.find(p=>p.id==id);
+const fd=o=>new Date(B0+o*DAY).toLocaleDateString('en-IN',{day:'numeric',month:'short',timeZone:'UTC'});
+const iso=o=>new Date(B0+o*DAY).toISOString().slice(0,10);
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const wf=[.9,.85,.9,.95,1.1,1.35,1.3];
+const dow=o=>new Date(B0+o*DAY).getUTCDay();
+const fc=(p,o)=>Math.round(p.dm*wf[dow(o)]);
+function disc(b){const l=b.e-D,p=pp(b.p);if(l<0)return null;let d=0;if(l==0)d=50;else if(l==1)d=35;else if(l<=3)d=20;if(!d)return null;
+const fl=Math.ceil(p.co*1.05),np=Math.max(fl,Math.round(p.pr*(1-d/100))),ad=Math.round((1-np/p.pr)*100);
+return{d:ad,np,capped:np==fl&&ad<d,why:l==0?'expires today':l==1?'expires tomorrow':'expires in '+l+' days'}}
+function toast(t){const e=$('#ts');e.innerHTML='<div class="toast">'+t+'</div>';setTimeout(()=>e.innerHTML='',2200)}
+function stock(id){return BT.filter(b=>b.p==id&&b.e>=D).reduce((a,b)=>a+b.q,0)}
+function next(){D++;P.forEach(p=>{let dem=fc(p,D),bs=BT.filter(b=>b.p==p.id&&b.e>=D&&b.q>0).sort((a,b)=>a.e-b.e);
+for(const b of bs){if(dem<=0)break;const ds=b.disc?Math.round(b.disc*0+1):0;const t=Math.min(b.q,Math.round(dem*(b.disc?1.6:1)));b.q-=t;dem-=t;S.sold+=t;
+if(b.disc)S.rec+=t*b.dp,S.saved+=t*p.co}});
+BT.forEach(b=>{if(b.e<D&&b.q>0&&!b.w){b.w=1;const p=pp(b.p);S.waste+=b.q*p.co;wasteLog.push(p.n+' ×'+b.q)}});
+BT=BT.filter(b=>b.q>0||b.e>=D);toast('Advanced to '+fd(D)+' – sales simulated');draw()}
+$('#adv').onclick=next;
+function st(b){const l=b.e-D;return l<0?['exp','Expired']:l<=2?['soon',l==0?'Today':l+'d left']:['fresh',l+'d left']}
+function alerts(){const a=[];BT.filter(b=>b.q>0).sort((x,y)=>x.e-y.e).forEach(b=>{const l=b.e-D,p=pp(b.p);
+if(l<0)a.push({t:'exp',x:'<b>'+p.n+'</b> ('+b.q+' units) expired '+fd(b.e)+'. Remove from shelf, do not sell.'});
+else if(l<=3)a.push({t:'soon',x:'<b>'+p.n+'</b> ('+b.q+' units) '+(l==0?'expires today':'expires in '+l+'d')+' – batch #'+b.id});});
+P.forEach(p=>{const s=stock(p.id),need=[1,2,3].reduce((a,i)=>a+fc(p,D+i),0);if(s<need)a.push({t:'low',x:'<b>'+p.n+'</b> low stock: '+s+' left vs ~'+need+' needed in 3 days. Reorder.'})});return a}
+function home(){const risk=BT.filter(b=>b.q>0&&b.e>=D&&b.e-D<=3),rv=risk.reduce((a,b)=>a+b.q*pp(b.p).pr,0),p=pp(sel);
+const f=[0,1,2,3,4,5,6].map(i=>fc(p,D+i)),mx=Math.max(...f);
+return`<div class="grid"><div class="card"><div class="k">At risk (3 days)</div><div class="v" style="color:var(--am)">${inr(rv)}</div><div class="mu">${risk.length} batches</div></div>
+<div class="card"><div class="k">Revenue recovered</div><div class="v" style="color:var(--gr)">${inr(S.rec)}</div><div class="mu">via discounts</div></div>
+<div class="card"><div class="k">Waste so far</div><div class="v" style="color:var(--rd)">${inr(S.waste)}</div><div class="mu">${wasteLog.length?wasteLog.slice(-2).join(', '):'none yet'}</div></div>
+<div class="card"><div class="k">Units sold</div><div class="v">${S.sold}</div><div class="mu">simulated</div></div></div>
+<div class="card"><h3>7-day demand forecast</h3><div class="chips" style="margin-bottom:22px">${P.map(x=>`<button class="${x.id==sel?'p':''}" onclick="sel='${x.id}';draw()">${x.n.split(' ')[0]}</button>`).join('')}</div>
+<div class="bars">${f.map(v=>`<div style="height:${v/mx*100}%"><b>${v}</b></div>`).join('')}</div>
+<div class="bl">${f.map((v,i)=>`<span>${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dow(D+i)]}</span>`).join('')}</div>
+<p class="mu">${p.n}: in stock ${stock(p.id)}. Weekend spike detected, so stock up before Friday.</p></div>
+<div class="card"><h3>Top alerts</h3>${alerts().slice(0,3).map(a=>`<div class="row"><span>${a.x}</span></div>`).join('')||'<div class="mu">All clear 🎉</div>'}</div>`}
+function stockV(){const bs=[...BT].sort((a,b)=>a.e-b.e);
+return`<div class="card"><h3>Batches (FIFO by expiry)</h3>${bs.map(b=>{const p=pp(b.p),[c,t]=st(b),d=disc(b);
+return`<div class="row"><div><b>${p.n}</b> <span class="mu">#${b.id}</span><div class="mu">${b.q} units · exp ${fd(b.e)}${b.disc?' · <span style="color:var(--gr)">'+b.disc+'% off live</span>':''}</div>
+${d&&!b.disc&&b.q?`<div style="margin-top:4px;font-size:13px">💡 <b>${d.d}% off → ${inr(d.np)}</b> <span class="mu">(${d.why}${d.capped?', capped at cost+5%':''})</span></div>`:''}</div>
+<div style="text-align:right"><span class="tag ${c}">${t}</span>${d&&!b.disc&&b.q?`<br><button class="p" style="margin-top:6px;padding:5px 10px" onclick="ap(${b.id})">Apply</button>`:''}${c=='exp'&&b.q?`<br><button class="d" style="margin-top:6px;padding:5px 10px" onclick="wo(${b.id})">Write off</button>`:''}</div></div>`}).join('')}</div>`}
+function ap(id){const b=BT.find(x=>x.id==id),d=disc(b);b.disc=d.d;b.dp=d.np;toast('Discount of '+d.d+'% applied');draw()}
+function wo(id){const b=BT.find(x=>x.id==id),p=pp(b.p);if(!b.w)S.waste+=b.q*p.co,wasteLog.push(p.n+' ×'+b.q);b.q=0;BT=BT.filter(x=>x.q>0);toast('Written off');draw()}
+let sc={step:0};
+function scanV(){const x=sc,p=x.p&&pp(x.p);
+if(x.step==0)return`<div class="card"><h3>1 · Scan barcode</h3><div class="view ${x.busy?'on':''}">${x.busy?'Scanning…':'📷 Point camera at barcode'}</div><div class="mu" style="margin-bottom:8px">Prototype: tap a sample product to simulate a scan</div><div class="chips">${P.map(q=>`<button onclick="sa('${q.id}')">${q.n}</button>`).join('')}</div></div>`;
+if(x.step==1)return`<div class="card"><h3>2 · Product identified</h3><div class="row"><span><b>${p.n}</b><div class="mu">${p.c} · barcode ${p.bc}</div></span><span class="tag fresh">Found</span></div>
+<div class="view on" style="margin-top:10px">Reading expiry label with OCR…</div></div>`;
+return`<div class="card"><h3>3 · Confirm details</h3><div class="row"><span><b>${p.n}</b><div class="mu">${p.c} · MRP ${inr(p.pr)}</div></span><span class="tag fresh">OCR read</span></div>
+<div class="mu" style="margin-top:8px">OCR text: “${x.lb}” → parsed as <b>${fd(x.e)}</b></div>
+<label>Expiry date (edit if wrong)</label><input type="date" id="ed" value="${iso(x.e)}">
+<label>Quantity</label><input type="number" id="qt" value="12" min="1">
+<div style="display:flex;gap:8px;margin-top:12px"><button class="p" onclick="sv()">Save batch</button><button onclick="sc={step:0};draw()">Cancel</button></div></div>`}
+function sa(id){sc={step:0,busy:1};draw();setTimeout(()=>{sc={step:1,p:id};draw();setTimeout(()=>{const p=pp(id),m=p.lb.match(/(\d+)[ \/](\w+)[ \/](\d+)/),mo=isNaN(m[2])?['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'].indexOf(m[2]):m[2]-1;
+sc={step:2,p:id,lb:p.lb,e:Math.round((Date.UTC(2000+ +m[3],mo,+m[1])-B0)/DAY)};draw()},1300)},900)}
+function sv(){const e=Math.round((Date.parse($('#ed').value)-B0)/DAY),q=+$('#qt').value||1;BT.push({id:nid++,p:sc.p,q,e});toast('Batch saved. Reminders scheduled for '+fd(e-3)+' and '+fd(e-1));sc={step:0};tab='stock';draw()}
+function alV(){const a=alerts(),ic={exp:'🔴',soon:'🟠',low:'🟡'};
+return`<div class="card"><h3>Alerts &amp; reminders</h3>${a.map(x=>`<div class="row"><span>${ic[x.t]} ${x.x}</span></div>`).join('')||'<div class="mu">No alerts. Try “Next day”.</div>'}</div>
+<div class="card"><h3>Sample WhatsApp reminder</h3><div class="mu" style="white-space:pre-line">${a.find(x=>x.t=='soon')?'TaazaSetu: '+a.find(x=>x.t=='soon').x.replace(/<[^>]+>/g,'')+'\nSuggested: apply discount in app.':'No expiring batches right now.'}</div></div>`}
+function draw(){$('#dt').textContent='Simulated date: '+new Date(B0+D*DAY).toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric',timeZone:'UTC'})+' · Café demo';
+const T=[['home','📊 Dashboard'],['scan','📷 Scan'],['stock','📦 Stock'],['al','🔔 Alerts '+alerts().length]];
+$('#nv').innerHTML=T.map(t=>`<button class="${t[0]==tab?'on':''}" onclick="tab='${t[0]}';draw()">${t[1]}</button>`).join('');
+$('#m').innerHTML={home,scan:scanV,stock:stockV,al:alV}[tab]()}
+draw();
+</script></body></html>
